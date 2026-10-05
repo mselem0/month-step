@@ -42,3 +42,9 @@ $('#newMonth').onclick=()=>{const last=state.months.at(-1),d=new Date(last.id+'-
 let installPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#install').hidden=false;});$('#install').onclick=async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;$('#install').hidden=true;}};
 if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>toast('لم يتم تجهيز العمل أوفلاين؛ حاول فتح التطبيق متصلًا بالإنترنت.'));
 render();
+
+const themeButton=$('#theme'),systemTheme=matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(theme){document.documentElement.dataset.theme=theme;const dark=theme==='dark';themeButton.textContent=dark?'الوضع الفاتح ☀':'الوضع الداكن ☾';themeButton.setAttribute('aria-pressed',String(dark));themeButton.setAttribute('aria-label',dark?'تفعيل الوضع الفاتح':'تفعيل الوضع الداكن');document.querySelector('meta[name="theme-color"]').content=dark?'#101c1a':'#123f37';}
+applyTheme(document.documentElement.dataset.theme||'light');
+themeButton.onclick=()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(theme);try{localStorage.setItem('month-step-theme',theme);}catch{toast('تم تغيير المظهر، لكن تعذّر حفظ الاختيار على الجهاز');}};
+systemTheme.addEventListener('change',e=>{try{if(!localStorage.getItem('month-step-theme'))applyTheme(e.matches?'dark':'light');}catch{}});
